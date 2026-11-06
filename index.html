@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10152b">
+<meta name="description" content="IQ ARENA - لعبة تحديات وأسئلة جماعية تعمل دون إنترنت">
+<title>IQ ARENA | ساحة التحديات</title>
+
+<style>
+:root{
+--bg:#0b1020;
+--panel:#151d35;
+--panel2:#1b2744;
+--text:#f5f7ff;
+--muted:#aab5d1;
+--gold:#ffd166;
+--cyan:#45d6e8;
+--pink:#ff5e9c;
+--green:#51d69a;
+--line:#2b385c;
+--shadow:0 18px 45px #0006
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+background:radial-gradient(circle at 50% -15%,#263b70 0,#11182e 42%,#090e1d 100%);
+color:var(--text);
+font-family:Tahoma,Arial,sans-serif;
+min-height:100vh
+}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0;color:inherit}
+.app{width:min(100%,760px);margin:auto;padding:18px 14px 34px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:5px 0 22px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{
+width:48px;height:48px;border-radius:16px;
+display:grid;place-items:center;
+background:linear-gradient(135deg,#ffd166,#ff8a5b);
+color:#17182b;font-size:25px;
+box-shadow:0 8px 22px #ffad4a44
+}
+.brand h1{font-size:21px;margin:0;letter-spacing:1px}
+.brand small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.pill{background:#ffffff10;border:1px solid var(--line);border-radius:99px;padding:9px 12px;color:var(--muted);font-size:12px}
+.screen{display:none;animation:fade .25s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.hero{text-align:center;padding:22px 10px 20px}
+.hero .big{font-size:54px;filter:drop-shadow(0 8px 16px #0008)}
+.hero h2{font-size:29px;margin:8px 0;color:var(--gold)}
+.hero p{color:var(--muted);line-height:1.8;margin:0}
+.card{
+background:linear-gradient(145deg,#1a2542,#121a30);
+border:1px solid var(--line);
+border-radius:22px;padding:18px;
+box-shadow:var(--shadow);margin:14px 0
+}
+.section-title{font-size:16px;margin:0 0 13px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.choice{
+background:#ffffff09;border:1px solid var(--line);
+padding:14px;border-radius:15px;text-align:center;transition:.18s
+}
+.choice strong{display:block;font-size:16px;margin-top:6px}
+.choice small{color:var(--muted);font-size:11px}
+.choice.selected{
+border-color:var(--gold);
+background:#ffd16618;
+box-shadow:0 0 0 1px #ffd16644 inset
+}
+.choice .ico{font-size:25px}
+.field{margin:12px 0}
+.field label{display:block;color:var(--muted);font-size:12px;margin:0 0 7px}
+.field input,.field select{
+width:100%;padding:13px 14px;border-radius:12px;
+background:#0c1428;border:1px solid var(--line);
+color:var(--text);outline:none
+}
+.field input:focus,.field select:focus{border-color:var(--cyan)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{
+width:100%;padding:15px;border-radius:14px;
+font-weight:bold;
+background:linear-gradient(100deg,#ffd166,#ff9f59);
+color:#191a2c;box-shadow:0 8px 22px #ffb64c30
+}
+.btn.secondary{background:#263656;color:var(--text);box-shadow:none;border:1px solid var(--line)}
+.btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--muted)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:11px;color:var(--muted);line-height:1.7}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 12px}
+.turn{font-size:15px;font-weight:bold;color:var(--gold)}
+.progress{height:7px;border-radius:20px;background:#ffffff14;overflow:hidden;margin:10px 0 15px}
+.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--gold));width:0;transition:width .3s}
+.scoreboard{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.score{
+background:#ffffff09;border:1px solid var(--line);
+border-radius:12px;padding:9px 5px;text-align:center;min-width:0
+}
+.score.current{border-color:var(--gold);background:#ffd16618}
+.score .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:4px}
+.score b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.score small{color:var(--muted)}
+.wheel-wrap{position:relative;width:min(78vw,360px);margin:15px auto 10px;aspect-ratio:1}
+.wheel{
+width:100%;height:100%;border-radius:50%;
+border:8px solid #f6d98b;
+box-shadow:0 0 0 5px #5b4561,0 15px 40px #0009;
+transition:transform 4.2s cubic-bezier(.12,.72,.12,1);
+position:relative;overflow:hidden
+}
+.wheel-labels{position:absolute;inset:0;pointer-events:none}
+.wheel-label{
+position:absolute;left:50%;top:50%;width:45%;
+transform-origin:0 50%;font-size:12px;font-weight:bold;
+text-shadow:0 2px 4px #000;white-space:nowrap;text-align:left
+}
+.pointer{
+position:absolute;z-index:3;top:-10px;left:50%;
+transform:translateX(-50%);width:0;height:0;
+border-left:17px solid transparent;
+border-right:17px solid transparent;
+border-top:34px solid #fff;
+filter:drop-shadow(0 3px 3px #0008)
+}
+.wheel-center{
+position:absolute;z-index:2;left:50%;top:50%;
+transform:translate(-50%,-50%);
+width:76px;height:76px;border-radius:50%;
+background:linear-gradient(145deg,#fff2c0,#ffb84d);
+border:6px solid #fff;color:#25233a;
+display:grid;place-items:center;font-size:27px;
+box-shadow:0 5px 15px #0008
+}
+.spin-btn{max-width:260px;margin:0 auto;display:block}
+.question-head{text-align:center}
+.category-badge{
+display:inline-block;border-radius:99px;padding:8px 14px;
+background:#45d6e822;border:1px solid #45d6e855;
+color:var(--cyan);font-size:12px
+}
+.question{font-size:21px;line-height:1.7;text-align:center;margin:18px 0}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.answer{
+background:#ffffff0b;border:1px solid var(--line);
+border-radius:13px;padding:14px 10px;
+min-height:58px;text-align:center;line-height:1.5
+}
+.answer.correct{background:#51d69a22;border-color:var(--green)}
+.answer.wrong{background:#ff5e9c22;border-color:var(--pink)}
+.answer:disabled{cursor:default}
+.feedback{text-align:center;font-weight:bold;min-height:27px;margin:12px 0;color:var(--gold)}
+.timer{text-align:center;color:var(--muted);font-size:12px}
+.result{text-align:center}
+.winner{font-size:60px}
+.winner-name{font-size:26px;color:var(--gold);margin:8px}
+.rank{display:flex;justify-content:space-between;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
+.rank:last-child{border:0}
+.rank strong{color:var(--gold)}
+.footer{text-align:center;color:#7886a8;font-size:10px;margin:25px 0 0}
+@media(min-width:600px){
+.grid{grid-template-columns:repeat(3,1fr)}
+.scoreboard{grid-template-columns:repeat(6,1fr)}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+<div class="brand">
+<div class="logo">✦</div>
+<div>
+<h1>IQ ARENA</h1>
+<small>ساحة التحديات • العب بعقلك</small>
+</div>
+</div>
+<div class="pill">📴 تعمل دون إنترنت</div>
+</header>
+
+<!-- الصفحة الرئيسية -->
+<section id="setup" class="screen active">
+
+<div class="hero">
+<div class="big">🎡</div>
+<h2>استعد للتحدّي!</h2>
+<p>أدر العجلة، اكتشف التحدي، واجمع أكبر عدد من النقاط.<br>المنافسة تبدأ من هنا.</p>
+</div>
+
+<div class="card">
+<h3 class="section-title">👥 اختر عدد اللاعبين</h3>
+
+<div class="grid" id="modeChoices">
+
+<button class="choice selected" data-mode="1">
+<span class="ico">🧍</span>
+<strong>لاعب واحد</strong>
+<small>ضد الكمبيوتر</small>
+</button>
+
+<button class="choice" data-mode="2">
+<span class="ico">👥</span>
+<strong>لاعبان</strong>
+<small>منافسة مباشرة</small>
+</button>
+
+<button class="choice" data-mode="4">
+<span class="ico">👨‍👩‍👧‍👦</span>
+<strong>4 لاعبين</strong>
+<small>فريق الأصدقاء</small>
+</button>
+
+<button class="choice" data-mode="6">
+<span class="ico">🏆</span>
+<strong>6 لاعبين</strong>
+<small>منافسة كبيرة</small>
+</button>
+
+</div>
+
+<div id="botsWrap" class="field">
+<label>عدد المنافسين الآليين معك</label>
+<select id="bots">
+<option value="1">1 منافس</option>
+<option value="2">2 منافسان</option>
+<option value="3">3 منافسون</option>
+<option value="4">4 منافسون</option>
+<option value="5" selected>5 منافسين</option>
+</select>
+<div class="note">المنافسون الآليون يعملون محلياً دون اتصال بالإنترنت.</div>
+</div>
+
+<div class="field">
+<label>عدد الجولات</label>
+<select id="rounds">
+<option>5</option>
+<option selected>10</option>
+<option>15</option>
+<option>20</option>
+</select>
+</div>
+</div>
+
+<div class="card">
+<h3 class="section-title">✍️ أسماء اللاعبين</h3>
+<div id="nameFields" class="row"></div>
+<div class="note">يمكنك تعديل الأسماء قبل بدء المباراة.</div>
+</div>
+
+<div class="card">
+<h3 class="section-title">🎯 أنواع التحديات</h3>
+<div class="grid" id="categoryChoices"></div>
+<p class="note">
+اختر نوعاً واحداً أو أكثر، أو اختر «مختلطة» لتدور العجلة على جميع الأنواع.
+</p>
+</div>
+
+<button id="startBtn" class="btn">🚀 ابدأ المباراة</button>
+
+<div class="footer">IQ ARENA • إصدار تجريبي يعمل محلياً على جهازك</div>
+
+</section>
+
+<!-- صفحة اللعب -->
+<section id="game" class="screen">
+
+<div class="topline">
+<span class="turn" id="turnLabel">دور اللاعب</span>
+<span class="pill" id="roundLabel">الجولة 1</span>
+</div>
+
+<div class="progress"><span id="progressBar"></span></div>
+
+<div class="scoreboard" id="scoreboard"></div>
+
+<div class="card" id="wheelCard">
+
+<div class="topline">
+<b>🎡 عجلة الحظ والتحديات</b>
+<span class="pill">اضغط لتدويرها</span>
+</div>
+
+<div class="wheel-wrap">
+<div class="pointer"></div>
+<div id="wheel" class="wheel">
+<div id="wheelLabels" class="wheel-labels"></div>
+</div>
+<div class="wheel-center">✦</div>
+</div>
+
+<button id="spinBtn" class="btn spin-btn">🎡 أدر العجلة</button>
+
+<p class="note" style="text-align:center">
+قد تحصل على تحدٍ خاص أو نقاط مضاعفة أو إعادة الدور!
+</p>
+
+</div>
+
+<div class="card" id="questionCard" style="display:none">
+
+<div class="question-head">
+<span class="category-badge" id="categoryBadge"></span>
+</div>
+
+<div class="question" id="questionText"></div>
+<div class="timer" id="timerText">لديك 15 ثانية</div>
+<div class="answers" id="answers"></div>
+<div class="feedback" id="feedback"></div>
+
+<button id="nextBtn" class="btn" style="display:none">التالي ←</button>
+
+</div>
+
+<button id="quitBtn" class="btn ghost" style="margin-top:10px">
+إنهاء المباراة
+</button>
+
+</section>
+
+<!-- صفحة النتائج -->
+<section id="end" class="screen">
+
+<div class="card result">
+<div class="winner">🏆</div>
+<h2>انتهت المباراة!</h2>
+<div class="winner-name" id="winnerName"></div>
+<p class="note">أحسنت! إليك الترتيب النهائي.</p>
+<div id="finalRanks"></div>
+</div>
+
+<div class="row">
+<button id="againBtn" class="btn">🔁 مباراة جديدة</button>
+<button id="homeBtn" class="btn secondary">الرئيسية</button>
+</div>
+
+<div class="card">
+<h3 class="section-title">📊 أفضل نتيجة محفوظة</h3>
+<div id="bestScore"></div>
+</div>
+
+</section>
+</div>
+
+<script>
+
+/* =========================
+   أنواع التحديات
+========================= */
+
+const categories=[
+
+{id:'general',name:'ثقافة عامة',icon:'🧠',color:'#f05d72'},
+
+{id:'football',name:'كرة القدم',icon:'⚽',color:'#f7a64b'},
+
+{id:'riddles',name:'ألغاز',icon:'🤔',color:'#f2d45c'},
+
+{id:'science',name:'علوم واكتشافات',icon:'🔬',color:'#65c98d'},
+
+{id:'math',name:'رياضيات',icon:'🔢',color:'#42c4d7'},
+
+{id:'guess',name:'تخمين',icon:'🕵️',color:'#568be9'},
+
+{id:'speed',name:'سرعة البديهة',icon:'⚡',color:'#9a72dc'},
+
+{id:'geo',name:'جغرافيا وتاريخ',icon:'🌍',color:'#e16db6'},
+
+{id:'proverbs',name:'أكمل المثل',icon:'📜',color:'#ff9f59'},
+
+{id:'truefalse',name:'صح أم خطأ',icon:'✅',color:'#45d6e8'}
+
+];
+
+/* =========================
+   التحديات الخاصة
+========================= */
+
+const special=[
+
+{id:'double',name:'نقاط مضاعفة',icon:'⭐',color:'#ffd166'},
+
+{id:'again',name:'إعادة الدور',icon:'🔄',color:'#45d6e8'},
+
+{id:'skip',name:'خسارة الدور',icon:'💣',color:'#ff5e9c'}
+
+];
+
+/* =========================
+   بنك الأسئلة
+========================= */
+
+const bank={
+
+general:[
+
+['ما عاصمة اليابان؟',['طوكيو','سيول','بكين','بانكوك'],0],
+
+['كم عدد ألوان قوس قزح؟',['5','6','7','8'],2],
+
+['ما أكبر كوكب في المجموعة الشمسية؟',['الأرض','المشتري','زحل','المريخ'],1],
+
+['ما الغاز الذي تحتاجه النار للاشتعال؟',['الأكسجين','النيتروجين','الهيدروجين','الهيليوم'],0],
+
+['كم عدد أيام السنة الكبيسة؟',['364','365','366','367'],2],
+
+['ما الحيوان المعروف بسفينة الصحراء؟',['الحصان','الجمل','الغزال','الفيل'],1],
+
+['ما اللغة الأكثر انتشاراً في البرازيل؟',['الإسبانية','البرتغالية','الفرنسية','الإنجليزية'],1],
+
+['ما العضو الذي يضخ الدم؟',['الرئة','الكبد','القلب','الكلى'],2]
+
+],
+
+football:[
+
+['كم لاعباً من فريق واحد يوجد داخل الملعب في كرة القدم؟',['9','10','11','12'],2],
+
+['ما المنتخب الفائز بكأس العالم 2022؟',['فرنسا','الأرجنتين','البرازيل','ألمانيا'],1],
+
+['كم مدة المباراة الرسمية دون الوقت بدل الضائع؟',['80 دقيقة','90 دقيقة','100 دقيقة','120 دقيقة'],1],
+
+['ما اسم البطولة الأوروبية الأهم للأندية؟',['الدوري الأوروبي','دوري أبطال أوروبا','كأس العالم','كأس القارات'],1],
+
+['ما لون البطاقة التي تعني الطرد؟',['الصفراء','الخضراء','الحمراء','الزرقاء'],2],
+
+['كم نقطة يحصل عليها الفريق عند الفوز في الدوري عادة؟',['1','2','3','4'],2],
+
+['كم عدد حكام الساحة في مباراة كرة القدم؟',['1','2','3','4'],0],
+
+['ما اسم مركز اللاعب الذي يحرس المرمى؟',['مهاجم','مدافع','حارس المرمى','وسط'],2],
+
+['كم شوطاً في مباراة كرة القدم؟',['شوط واحد','شوطان','ثلاثة','أربعة'],1]
+
+],
+
+riddles:[
+
+['شيء كلما أخذت منه كبر، ما هو؟',['البحر','الحفرة','العمر','الظل'],1],
+
+['له أسنان ولا يعض، ما هو؟',['المشط','التمساح','المنشار','المفتاح'],0],
+
+['يمشي بلا أرجل ويبكي بلا عيون، ما هو؟',['الإنسان','السحاب','النهر','الساعة'],1],
+
+['ما الشيء الذي يكتب ولا يقرأ؟',['القلم','الكتاب','الطالب','الحاسوب'],0],
+
+['ما الذي له عين واحدة ولا يرى؟',['الإبرة','العاصفة','الكاميرا','السمكة'],0],
+
+['ما الشيء الذي كلما زاد نقص؟',['العمر المتبقي','المال','الطول','الوزن'],0]
+
+],
+
+science:[
+
+['ما الكوكب الأقرب إلى الشمس؟',['الأرض','عطارد','المريخ','زحل'],1],
+
+['ما العضو المسؤول عن التنفس؟',['القلب','الرئة','الكبد','المعدة'],1],
+
+['ما أسرع حيوان بري؟',['الأسد','الفهد','الحصان','النمر'],1],
+
+['ما مصدر الطاقة الرئيسي للأرض؟',['القمر','الشمس','الرياح','الماء'],1],
+
+['ما المعدن السائل في درجة حرارة الغرفة؟',['الحديد','الذهب','الزئبق','النحاس'],2],
+
+['كم عدد أسنان الإنسان البالغ عادة؟',['20','28','32','36'],2],
+
+['ما الرمز الكيميائي للماء؟',['CO2','H2O','O2','NaCl'],1]
+
+],
+
+math:[
+
+['ما ناتج 9 × 7؟',['56','63','72','69'],1],
+
+['ما نصف العدد 150؟',['65','70','75','80'],2],
+
+['إذا كان معك 20 وأخذت 7، كم يبقى؟',['11','12','13','14'],2],
+
+['ما ناتج 12 + 18 ÷ 3؟',['10','18','20','30'],1],
+
+['ما العدد التالي: 2، 4، 8، 16، ؟',['20','24','30','32'],3],
+
+['ما ناتج 15 × 4؟',['45','50','60','65'],2],
+
+['كم يساوي 100 ÷ 5؟',['10','15','20','25'],2]
+
+],
+
+guess:[
+
+['أنا كوكب أحمر ويسمونني الكوكب الأحمر، من أنا؟',['الزهرة','المريخ','عطارد','نبتون'],1],
+
+['أنا أملك مفاتيح كثيرة ولا أفتح الأبواب، من أنا؟',['البيانو','السيارة','الخزانة','الهاتف'],0],
+
+['أنا عاصمة الجزائر، من أنا؟',['وهران','قسنطينة','الجزائر','عنابة'],2],
+
+['أنا شيء تراه في الليل ويضيء من بعيد، من أنا؟',['الشمس','القمر','السحاب','الجبل'],1],
+
+['أنا حيوان يحمل بيته على ظهره، من أنا؟',['الأرنب','السلحفاة','الأسد','الحصان'],1],
+
+['أنا أعيش في البحر وأمتلك ثمانية أذرع، من أنا؟',['الأخطبوط','القرش','الحوت','الدلفين'],0]
+
+],
+
+speed:[
+
+['كم ثانية في دقيقة واحدة؟',['30','50','60','100'],2],
+
+['ما أكبر: 1 كغ حديد أم 1 كغ قطن؟',['الحديد','القطن','متساويان','لا يمكن معرفة ذلك'],2],
+
+['كم ضلعاً للمثلث؟',['2','3','4','5'],1],
+
+['ما عكس كلمة سريع؟',['قوي','بطيء','بعيد','خفيف'],1],
+
+['إذا تجاوزت صاحب المركز الثاني في سباق، فما مركزك؟',['الأول','الثاني','الثالث','الرابع'],1],
+
+['كم شهراً في السنة؟',['10','11','12','13'],2]
+
+],
+
+geo:[
+
+['ما أكبر قارة في العالم؟',['أفريقيا','أوروبا','آسيا','أمريكا الجنوبية'],2],
+
+['في أي قارة تقع الجزائر؟',['آسيا','أفريقيا','أوروبا','أستراليا'],1],
+
+['ما عاصمة مصر؟',['الإسكندرية','القاهرة','الجيزة','الأقصر'],1],
+
+['كم عدد قارات العالم وفق التقسيم الشائع؟',['5','6','7','8'],2],
+
+['في أي سنة استقلت الجزائر؟',['1954','1962','1965','1971'],1],
+
+['ما عاصمة إيطاليا؟',['مدريد','روما','باريس','برلين'],1],
+
+['ما أكبر محيط في العالم؟',['الأطلسي','الهندي','الهادئ','المتجمد'],2]
+
+],
+
+proverbs:[
+
+['أكمل المثل: الصديق وقت ...',['المال','الضيق','الفرح','الراحة'],1],
+
+['أكمل المثل: من جد وجد ومن زرع ...',['حصد','أكل','نام','ربح'],0],
+
+['أكمل المثل: العلم نور والجهل ...',['قوة','ظلام','حكمة','نجاح'],1],
+
+['أكمل المثل: الوقاية خير من ...',['الدواء','المرض','الطبيب','العلاج'],0],
+
+['أكمل المثل: في التأني ...',['الخسارة','السلامة','الندم','الضعف'],1],
+
+['أكمل المثل: الوقت كـ ...',['السيف','الماء','الذهب','الهواء'],0]
+
+],
+
+truefalse:[
+
+['الشمس نجم وليست كوكباً.',['صح','خطأ'],0],
+
+['عدد أيام الأسبوع ثمانية.',['صح','خطأ'],1],
+
+['الجزائر تقع في قارة أفريقيا.',['صح','خطأ'],0],
+
+['الحوت من الثدييات.',['صح','خطأ'],0],
+
+['المريخ أكبر من المشتري.',['صح','خطأ'],1],
+
+['القمر يدور حول الأرض.',['صح','خطأ'],0],
+
+['الإنسان لديه ثلاثة قلوب.',['صح','خطأ'],1],
+
+['الأسماك تتنفس بالخياشيم.',['صح','خطأ'],0]
+
+]
+
+};
+
+/* =========================
+   متغيرات اللعبة
+========================= */
+
+let selectedMode=1;
+let selectedCats=['mixed'];
+let players=[];
+let turn=0;
+let round=1;
+let maxRounds=10;
+let questionCount=0;
+let bonus=false;
+let locked=false;
+let timer=null;
+let timeLeft=15;
+let currentQ=null;
+let rotation=0;
+let matchEnded=false;
+let wheelSegments=[];
+
+const $=id=>document.getElementById(id);
+
+/* =========================
+   التنقل بين الصفحات
+========================= */
+
+function show(id){
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+$(id).classList.add('active');
+window.scrollTo(0,0);
+}
+
+/* =========================
+   إنشاء أنواع التحديات
+========================= */
+
+function categoryMarkup(){
+
+$('categoryChoices').innerHTML=`
+
+<button class="choice selected" data-cat="mixed">
+<span class="ico">🎲</span>
+<strong>مختلطة</strong>
+<small>كل التحديات عشوائياً</small>
+</button>
+
+`+categories.map(c=>`
+
+<button class="choice" data-cat="${c.id}">
+<span class="ico">${c.icon}</span>
+<strong>${c.name}</strong>
+<small>أسئلة وتحديات</small>
+</button>
+
+`).join('');
+
+}
+
+/* =========================
+   اختيار اللاعبين
+========================= */
+
+function nameInputs(){
+
+let count=selectedMode===1?1:selectedMode;
+
+$('nameFields').innerHTML=Array.from({length:count},(_,i)=>`
+
+<div class="field">
+<label>${selectedMode===1?'اسمك':'اللاعب '+(i+1)}</label>
+<input id="pname${i}" maxlength="16"
+placeholder="اسم اللاعب"
+value="${selectedMode===1?'اللاعب 1':'اللاعب '+(i+1)}">
+</div>
+
+`).join('');
+
+}
+
+document.querySelectorAll('[data-mode]').forEach(b=>{
+
+b.addEventListener('click',()=>{
+
+selectedMode=+b.dataset.mode;
+
+document.querySelectorAll('[data-mode]').forEach(x=>
+x.classList.toggle('selected',x===b)
+);
+
+$('botsWrap').style.display=selectedMode===1?'block':'none';
+
+nameInputs();
+
+});
+
+});
+
+/* =========================
+   اختيار أنواع التحديات
+========================= */
+
+$('categoryChoices').addEventListener('click',e=>{
+
+let b=e.target.closest('[data-cat]');
+
+if(!b)return;
+
+let id=b.dataset.cat;
+
+if(id==='mixed'){
+
+selectedCats=['mixed'];
+
+}else{
+
+selectedCats=selectedCats.filter(x=>x!=='mixed');
+
+if(selectedCats.includes(id)){
+
+selectedCats=selectedCats.filter(x=>x!==id);
+
+}else{
+
+selectedCats.push(id);
+
+}
+
+if(!selectedCats.length){
+
+selectedCats=['mixed'];
+
+}
+
+}
+
+document.querySelectorAll('[data-cat]').forEach(x=>{
+
+x.classList.toggle('selected',selectedCats.includes(x.dataset.cat));
+
+});
+
+});
+
+/* =========================
+   الأصوات
+========================= */
+
+function sound(freq=600,dur=.12){
+
+try{
+
+let c=new(window.AudioContext||window.webkitAudioContext)();
+
+let o=c.createOscillator();
+
+let g=c.createGain();
+
+o.frequency.value=freq;
+
+o.connect(g);
+
+g.connect(c.destination);
+
+g.gain.setValueAtTime(.08,c.currentTime);
+
+g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur);
+
+o.start();
+
+o.stop(c.currentTime+dur);
+
+o.onended=()=>c.close();
+
+}catch(e){}
+
+}
+
+/* =========================
+   بدء المباراة
+========================= */
+
+function startGame(){
+
+let names=Array.from(
+{length:selectedMode===1?1:selectedMode},
+(_,i)=>$('pname'+i).value.trim()||'اللاعب '+(i+1)
+);
+
+players=names.map((name,i)=>({
+
+name,
+score:0,
+color:['#ffd166','#45d6e8','#ff5e9c','#51d69a','#a88bff','#ff9f59'][i],
+bot:false
+
+}));
+
+if(selectedMode===1){
+
+let n=+$('bots').value;
+
+for(let i=0;i<n;i++){
+
+players.push({
+
+name:['العبقري','المنافس','الذكي','البطل','المتحدي'][i],
+
+score:0,
+
+color:['#45d6e8','#ff5e9c','#51d69a','#a88bff','#ff9f59'][i],
+
+bot:true
+
+});
+
+}
+
+}
+
+maxRounds=+$('rounds').value;
+
+turn=0;
+round=1;
+questionCount=0;
+matchEnded=false;
+bonus=false;
+rotation=0;
+locked=false;
+
+$('wheel').style.transform='rotate(0deg)';
+
+renderScores();
+
+show('game');
+
+prepareTurn();
+
+}
+
+/* =========================
+   لوحة النتائج
+========================= */
+
+function renderScores(){
+
+$('scoreboard').innerHTML=players.map((p,i)=>`
+
+<div class="score ${i===turn?'current':''}">
+
+<b>
+<i class="dot" style="background:${p.color}"></i>
+${escapeHtml(p.name)}
+</b>
+
+<small>${p.score} نقطة</small>
+
+</div>
+
+`).join('');
+
+$('progressBar').style.width=
+
+Math.min(100,questionCount/(maxRounds*players.length)*100)+'%';
+
+}
+
+function escapeHtml(s){
+
+return String(s).replace(/[&<>"']/g,c=>({
+
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
+
+}[c]));
+
+}
+
+/* =========================
+   تحضير دور اللاعب
+========================= */
+
+function prepareTurn(){
+
+if(questionCount>=maxRounds*players.length){
+
+endGame();
+
+return;
+
+}
+
+if(turn===0&&questionCount>0){
+
+round++;
+
+}
+
+$('roundLabel').textContent='الجولة '+Math.min(round,maxRounds);
+
+$('turnLabel').textContent='🎮 الدور على '+players[turn].name+
+(players[turn].bot?' (الكمبيوتر)':'');
+
+renderScores();
+
+$('wheelCard').style.display='block';
+
+$('questionCard').style.display='none';
+
+$('spinBtn').disabled=players[turn].bot;
+
+if(players[turn].bot){
+
+$('spinBtn').textContent='🤖 الكمبيوتر يفكر...';
+
+setTimeout(botTurn,1000);
+
+}else{
+
+$('spinBtn').textContent='🎡 أدر العجلة';
+
+}
+
+}
+
+/* =========================
+   الأنواع المسموح بها
+========================= */
+
+function activeCategories(){
+
+if(selectedCats.includes('mixed')){
+
+return categories;
+
+}
+
+return categories.filter(c=>selectedCats.includes(c.id));
+
+}
+
+/* =========================
+   بناء العجلة
+========================= */
+
+function buildWheel(){
+
+let cats=activeCategories();
+
+let segments=[...cats,...special];
+
+let step=360/segments.length;
+
+$('wheel').style.background=
+
+`conic-gradient(${
+
+segments.map((s,i)=>`
+
+${s.color} ${i*step}deg ${(i+1)*step}deg
+
+`).join(',')
+
+})`;
+
+$('wheelLabels').innerHTML=segments.map((s,i)=>`
+
+<div class="wheel-label"
+style="transform:rotate(${i*step+step/2}deg) translateX(5px)">
+${s.icon} ${s.name}
+</div>
+
+`).join('');
+
+return segments;
+
+}
+
+/* =========================
+   تدوير العجلة
+========================= */
+
+function spin(){
+
+if(locked)return;
+
+locked=true;
+
+$('spinBtn').disabled=true;
+
+wheelSegments=buildWheel();
+
+let idx=Math.floor(Math.random()*wheelSegments.length);
+
+let step=360/wheelSegments.length;
+
+let target=360*5+(360-(idx*step+step/2));
+
+rotation+=target;
+
+$('wheel').style.transform=`rotate(${rotation}deg)`;
+
+sound(300,.2);
+
+setTimeout(()=>{
+
+let chosen=wheelSegments[idx];
+
+sound(850,.25);
+
+/* إعادة الدور */
+
+if(chosen.id==='again'){
+
+showWheelMessage('🔄 حصلت على إعادة الدور!');
+
+locked=false;
+
+$('spinBtn').disabled=false;
+
+$('spinBtn').textContent='🎡 أدر العجلة مجدداً';
+
+return;
+
+}
+
+/* خسارة الدور */
+
+if(chosen.id==='skip'){
+
+questionCount++;
+
+bonus=false;
+
+$('feedback').textContent='💣 خسرت هذا الدور!';
+
+setTimeout(nextTurn,1000);
+
+return;
+
+}
+
+/* النقاط المضاعفة */
+
+bonus=chosen.id==='double';
+
+/* احترام الأنواع المختارة */
+
+let available=activeCategories();
+
+let cat=chosen.id==='double'
+
+?available[Math.floor(Math.random()*available.length)]
+
+:chosen;
+
+showQuestion(cat);
+
+},4300);
+
+}
+
+/* =========================
+   رسالة إعادة الدور
+========================= */
+
+function showWheelMessage(msg){
+
+$('questionCard').style.display='block';
+
+$('wheelCard').style.display='none';
+
+$('categoryBadge').textContent='مفاجأة';
+
+$('questionText').textContent=msg;
+
+$('answers').innerHTML='';
+
+$('timerText').textContent='';
+
+$('feedback').textContent='';
+
+$('nextBtn').style.display='block';
+
+$('nextBtn').textContent='العودة إلى العجلة';
+
+$('nextBtn').onclick=()=>{
+
+$('questionCard').style.display='none';
+
+$('wheelCard').style.display='block';
+
+$('spinBtn').disabled=false;
+
+};
+
+}
+
+/* =========================
+   اختيار سؤال
+========================= */
+
+function pickQuestion(cat){
+
+let arr=bank[cat.id]||bank.general;
+
+return arr[Math.floor(Math.random()*arr.length)];
+
+}
+
+/* =========================
+   عرض السؤال
+========================= */
+
+function showQuestion(cat){
+
+currentQ=pickQuestion(cat);
+
+$('wheelCard').style.display='none';
+
+$('questionCard').style.display='block';
+
+$('categoryBadge').textContent=
+
+cat.icon+' '+cat.name+(bonus?' • نقاط مضاعفة':'');
+
+$('questionText').textContent=currentQ[0];
+
+$('answers').innerHTML=currentQ[1].map((a,i)=>`
+
+<button class="answer" data-answer="${i}">
+${String.fromCharCode(65+i)}. ${a}
+</button>
+
+`).join('');
+
+$('feedback').textContent='';
+
+$('nextBtn').style.display='none';
+
+locked=false;
+
+let seconds=cat.id==='speed'?10:15;
+
+startTimer(seconds);
+
+$('answers').querySelectorAll('button').forEach(b=>{
+
+b.addEventListener('click',()=>answer(+b.dataset.answer,cat));
+
+});
+
+/* إجابة الكمبيوتر */
+
+if(players[turn].bot){
+
+setTimeout(()=>{
+
+if(!locked){
+
+answer(
+
+Math.random()<.72
+
+?currentQ[2]
+
+:Math.floor(Math.random()*currentQ[1].length),
+
+cat
+
+);
+
+}
+
+},900);
+
+}
+
+}
+
+/* =========================
+   المؤقت
+========================= */
+
+function startTimer(sec){
+
+clearInterval(timer);
+
+timeLeft=sec;
+
+$('timerText').textContent='⏱️ الوقت المتبقي: '+timeLeft+' ثانية';
+
+timer=setInterval(()=>{
+
+timeLeft--;
+
+$('timerText').textContent='⏱️ الوقت المتبقي: '+timeLeft+' ثانية';
+
+if(timeLeft<=0){
+
+clearInterval(timer);
+
+answer(-1,{id:'timeout'});
+
+}
+
+},1000);
+
+}
+
+/* =========================
+   تصحيح الإجابة
+========================= */
+
+function answer(index,cat){
+
+if(locked)return;
+
+locked=true;
+
+clearInterval(timer);
+
+let correct=index===currentQ[2];
+
+let buttons=[...$('answers').querySelectorAll('button')];
+
+buttons.forEach((b,i)=>{
+
+b.disabled=true;
+
+if(i===currentQ[2])b.classList.add('correct');
+
+if(i===index&&!correct)b.classList.add('wrong');
+
+});
+
+let points=bonus?20:10;
+
+if(correct){
+
+players[turn].score+=points;
+
+sound(900,.2);
+
+$('feedback').textContent='🎉 إجابة صحيحة! +'+points+' نقاط';
+
+}else{
+
+sound(180,.25);
+
+$('feedback').textContent=
+
+index===-1?'⏰ انتهى الوقت!':'❌ إجابة خاطئة!';
+
+}
+
+questionCount++;
+
+renderScores();
+
+$('nextBtn').style.display='block';
+
+$('nextBtn').textContent='اللاعب التالي ←';
+
+$('nextBtn').onclick=nextTurn;
+
+if(players[turn].bot){
+
+$('nextBtn').textContent='🤖 ينتقل الكمبيوتر تلقائياً...';
+
+setTimeout(nextTurn,1500);
+
+}
+
+}
+
+/* =========================
+   الانتقال للاعب التالي
+========================= */
+
+function nextTurn(){
+
+clearInterval(timer);
+
+bonus=false;
+
+turn=(turn+1)%players.length;
+
+prepareTurn();
+
+}
+
+/* =========================
+   دور الكمبيوتر
+========================= */
+
+function botTurn(){
+
+if(matchEnded)return;
+
+spinBot();
+
+}
+
+function spinBot(){
+
+wheelSegments=buildWheel();
+
+/* الكمبيوتر لا يختار إلا من الأنواع المسموحة */
+
+let eligible=wheelSegments.filter(x=>
+
+!['again','skip'].includes(x.id)
+
+);
+
+let chosen=eligible[Math.floor(Math.random()*eligible.length)];
+
+let idx=wheelSegments.indexOf(chosen);
+
+let step=360/wheelSegments.length;
+
+rotation+=360*4+(360-(idx*step+step/2));
+
+$('wheel').style.transform=`rotate(${rotation}deg)`;
+
+sound(300,.15);
+
+setTimeout(()=>{
+
+/* النقاط المضاعفة */
+
+bonus=chosen.id==='double';
+
+/* احترام الأنواع المختارة */
+
+let available=activeCategories();
+
+let cat=chosen.id==='double'
+
+?available[Math.floor(Math.random()*available.length)]
+
+:chosen;
+
+showQuestion(cat);
+
+},1400);
+
+}
+
+/* =========================
+   نهاية المباراة
+========================= */
+
+function endGame(){
+
+matchEnded=true;
+
+clearInterval(timer);
+
+let sorted=[...players].sort((a,b)=>b.score-a.score);
+
+$('winnerName').textContent='🥇 '+sorted[0].name;
+
+$('finalRanks').innerHTML=sorted.map((p,i)=>`
+
+<div class="rank">
+
+<span>${['🥇','🥈','🥉','🏅','🏅','🏅'][i]} ${escapeHtml(p.name)}</span>
+
+<strong>${p.score} نقطة</strong>
+
+</div>
+
+`).join('');
+
+let best=+(localStorage.getItem('iq_best')||0);
+
+let top=sorted[0].score;
+
+if(top>best){
+
+best=top;
+
+localStorage.setItem('iq_best',best);
+
+}
+
+$('bestScore').textContent=best+' نقطة';
+
+let hist=JSON.parse(localStorage.getItem('iq_history')||'[]');
+
+hist.unshift({
+
+date:new Date().toLocaleDateString('ar-DZ'),
+
+winner:sorted[0].name,
+
+score:top
+
+});
+
+localStorage.setItem('iq_history',JSON.stringify(hist.slice(0,10)));
+
+show('end');
+
+}
+
+/* =========================
+   الأزرار
+========================= */
+
+$('spinBtn').addEventListener('click',spin);
+
+$('startBtn').addEventListener('click',startGame);
+
+$('quitBtn').addEventListener('click',endGame);
+
+$('againBtn').addEventListener('click',()=>{
+
+clearInterval(timer);
+
+show('setup');
+
+});
+
+$('homeBtn').addEventListener('click',()=>{
+
+clearInterval(timer);
+
+show('setup');
+
+});
+
+/* =========================
+   تشغيل اللعبة
+========================= */
+
+categoryMarkup();
+
+nameInputs();
+
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+
+window.addEventListener('load',()=>{
+
+navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+});
+
+}
+
+</script>
+</body>
+  </html>
